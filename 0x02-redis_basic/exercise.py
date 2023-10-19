@@ -76,3 +76,12 @@ class Cache:
         except Exception:
             value = 0
         return value
+
+
+def replay(func):
+    inputs = cache._redis.lrange(f"{func.__qualname__}:inputs", 0, -1)
+    outputs = cache._redis.lrange(f"{func.__qualname__}:outputs", 0, -1)
+
+    print(f"{func.__qualname__} was called {len(inputs)} times:")
+    for inp, out in zip(inputs, outputs):
+        print(f"{func.__qualname__}{inp.decode()} -> {out.decode()}")
